@@ -1,0 +1,46 @@
+<mujoco model="SO-101 Block Building">
+  <include file="robot.xml"/>
+  <option timestep="0.0020833333333333333" noslip_iterations="5"/>
+  <statistic center=".3875 .22 .18" extent=".64"/>
+  <visual>
+    <global azimuth="145" elevation="-37" offwidth="640" offheight="480"/>
+    <headlight ambient=".4 .4 .4" diffuse=".45 .45 .45" specular=".1 .1 .1"/>
+    <rgba haze=".36 .38 .40 1"/>
+  </visual>
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1=".39 .41 .43" rgb2=".24 .25 .26" width="32" height="192"/>
+    <material name="housing" rgba=".035 .037 .04 1" specular=".15" shininess=".25"/>
+    <material name="lens" rgba=".018 .023 .03 1" specular=".6" shininess=".8"/>
+  </asset>
+  <worldbody>
+    <light pos=".25 .2 1.5" dir="0 0 -1" diffuse=".65 .65 .65" specular=".15 .15 .15"/>
+    <geom name="table" type="plane" pos="0 0 -.0006" size="2 2 .02" rgba=".32 .33 .34 1"/>
+    <!-- Board coordinates in metres. Its top surface is z=0. -->
+    <geom name="paper" type="box" pos=".3875 .27 -.0003" size=".3875 .27 .0003" rgba=".96 .96 .96 1"/>
+    <geom name="centre_ink" type="box" pos=".3875 .27 .000012" size=".001 .27 .00001"
+          rgba=".015 .015 .015 1" contype="0" conaffinity="0"/>
+    <geom name="arm_mount" type="box" pos=".5175 0 .002" size=".0575 .022 .002" material="housing"/>
+    <body name="top_stand" pos=".325 0 0">
+      <geom name="stand_foot" type="box" size=".045 .018 .006" pos="0 -.029 .006" material="housing"/>
+      <geom type="box" pos="0 -.025 .271" size=".0175 .0125 .259" material="housing"/>
+      <geom type="capsule" fromto="0 -.025 .522 0 .031 .55" size=".007" material="housing"/>
+      <!-- Image right is board +X. Tilt the PCB 34 degrees about that axis. -->
+      <body name="top_camera_housing" pos="0 .035 .546" xyaxes="1 0 0 0 .829037573 .559192903">
+        <geom type="box" size=".018 .0125 .009" material="housing"/>
+        <geom type="cylinder" pos="0 0 -.012" size=".007 .004" material="lens"/>
+        <camera name="top" pos="0 0 -.0162" fovy="76" resolution="640 480"/>
+      </body>
+    </body>
+    <!-- The episode layout supplies each block's colour, length and position. -->
+    <body name="candidate" pos=".455 .180 .01">
+      <freejoint name="candidate_free"/><geom name="candidate_block" type="box" size=".0225 .015 .010" rgba=".055 .47 .17 1"/>
+    </body>
+    <body name="reference" pos=".320 .175 .01">
+      <geom name="reference_block" type="box" size=".0225 .015 .010" rgba=".055 .47 .17 1"/>
+    </body>
+  </worldbody>
+  <sensor>
+    <framepos name="so101/ee_pos" objtype="site" objname="gripperframe"/>
+    <framequat name="so101/ee_quat" objtype="site" objname="gripperframe"/>
+  </sensor>
+</mujoco>

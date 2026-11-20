@@ -1,0 +1,5 @@
+torch==2.11.0
+torchvision==0.26.0
+lerobot[training,smolvla,feetech,hardware,evaluation]==0.7.0
+transformers==5.22.2
+lerobot-env-so101==0.4.0
