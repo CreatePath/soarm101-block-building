@@ -63,11 +63,16 @@ def policy_commands(env, renderer, policy, preprocess, postprocess, horizon):
         remaining -= len(actions)
 
 
-@torch.inference_mode()
-def evaluate(checkpoint, seed):
+def load_policy(checkpoint):
     enable_640x480()
     policy = SmolVLAPolicy.from_pretrained(str(checkpoint), strict=True).eval()
     preprocess, postprocess = make_pre_post_processors(policy.config, pretrained_path=checkpoint)
+    return policy, preprocess, postprocess
+
+
+@torch.inference_mode()
+def evaluate(checkpoint, seed):
+    policy, preprocess, postprocess = load_policy(checkpoint)
     rows = []
     for index, (layouts, lengths) in enumerate(verified_pairs(seed)):
         for layout, horizon in zip(layouts, lengths, strict=True):

@@ -35,3 +35,21 @@
 완료된 실행은 `scripts/verify_1color.py <실행 폴더>`로 다시 검증할 수 있다. 이전 240개 실행을 검증할 때는 `--episodes 240`을 붙인다. `episodes.jsonl`은 색 조합, 좌표, 구역, 실제 물리 검증 수치를 에피소드 순서로 담고, `verification.json`은 저장한 프레임과 검증 결과를 요약한다.
 
 오른쪽에 네 색 후보를 동시에 두는 과제는 다음 수집 단계이며 이번 데이터의 수량에는 포함하지 않는다.
+
+## 실물 SO-101에서 시연 재생
+
+표준 SO-101의 중간점 보정과 시뮬레이터의 관절 방향이 일치하는 팔을 대상으로 한다. 아래 명령은 로컬 실행 폴더에서 에피소드 번호와 프레임 순서를 유지한 재생용 LeRobot 데이터셋을 만든다. 팔 다섯 축은 도(°), 집게는 닫힘 0에서 열림 100 사이로 변환한다. 카메라 프레임과 관측값은 원본에 있다.
+
+```bash
+export HF_HUB_OFFLINE=1
+python -m scripts.prepare_1color_replay outputs/data/1color/sample-10 outputs/data/1color/sample-10-replay
+```
+
+이미 변환한 폴더가 있으면 아래 명령부터 실행한다. 포트와 ID는 실물 팔을 보정할 때 사용한 값으로 바꾼다. 시작 전에 팔과 집게를 해당 에피소드의 시작 자세에 가깝게 놓고, 원본 `episodes.jsonl`의 `reference_xy`와 `candidate_xy`에 블록을 배치한다. 재생 중에는 카메라로 블록 위치를 보정하지 않는다.
+
+```bash
+HF_HUB_OFFLINE=1 lerobot-replay \
+  --robot.type=so101_follower --robot.port=/dev/ttyACM0 --robot.id=block_follower \
+  --robot.use_degrees=true --dataset.repo_id=local/so101_1color_replay \
+  --dataset.root=outputs/data/1color/sample-10-replay --dataset.episode=0 --play_sounds=false
+```
